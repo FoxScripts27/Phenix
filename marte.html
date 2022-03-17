@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Juego Phoenix</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom fonts for this template -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Lora:400,400i,700,700i" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="css/business-casual.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+  <h1 class="site-heading text-center text-white d-none d-lg-block">
+    <!--<span class="site-heading-upper text-primary mb-3">A Free Bootstrap 4 Business Theme</span>-->
+    <img src="img/LOGOPHOENIX.png" alt="" width="500" height="210">
+  </h1>
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark py-lg-4" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand text-uppercase text-expanded font-weight-bold d-lg-none" href="#">Phoenix</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item px-lg-4">
+            <a class="nav-link text-uppercase text-expanded" href="inicio.html">Inicio
+              <span class="sr-only">(current)</span>
+            </a>
+          </li>
+          <li class="nav-item active px-lg-4">
+		  
+     <div class="dropdown">
+		<a  class="nav-link text-uppercase text-expanded font-weight-bold dropdown-toggle" href="about.html"id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Juego
+			<div class="dropdown-menu">
+			<a class="dropdown-item text-uppercase text-expanded" href="mercurio.html">Mercurio</a>
+			<a class="dropdown-item text-uppercase text-expanded" href="venus.html">Venus</a>
+			<a class="dropdown-item text-uppercase text-expanded" href="marte.html">Marte</a>
+     </div>
+			</a>
+          </li>
+          <li class="nav-item px-lg-4">
+            <a class="nav-link text-uppercase text-expanded" href="planetas.html">Planetas</a>
+          </li>
+          <li class="nav-item px-lg-4">
+            <a class="nav-link text-uppercase text-expanded" href="informacion.html">Información</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+<section class="page-section about-heading">
+<div class="container", id="MARTE", align="center" >
+<script src="https://cdnjs.cloudflare.com/ajax/libs/phaser-ce/2.11.0/phaser.min.js"></script>
+<script>
+var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'MARTE', { preload: preload, create: create, update: update });
+//CREACION DE VARIABLES
+
+//JUGADOR
+var player;
+
+//TECLAS DE MOVIMIENTO
+var cursors;
+var jumpButton;
+
+var map;
+var layer;
+var coins;
+var mountain;
+var facing = 'right';
+var dir = 'der';
+var jumping = false;
+
+var touch=true;
+var walking=true;
+var moving=true;
+
+var micolision= true;
+
+//CONTAR COLECCIONABLES
+var text;
+var colec = 0;
+
+//Sonidos
+var jump_sound;
+var ice_sound;
+var open_sound;
+var close_sound;
+
+function collectible(game){
+	var colecx = Math.floor(Math.random()*10000);
+    Phaser.Sprite.call(this, game, colecx, 510, 'ice');	
+	game.physics.arcade.enable(this);
+}
+collectible.prototype = Object.create(Phaser.Sprite.prototype);
+collectible.prototype.constructor = collectible;
+
+function preload() {
+//JUGADOR
+game.load.spritesheet('player', 'Imagenes/spaceman70x90.png', 70, 90, 33);
+
+//MAPA
+game.load.tilemap('map', 'MARTE.csv', null, Phaser.Tilemap.CSV);
+game.load.image('tiles', 'Imagenes/Tileset.png');
+game.load.image('background', 'Imagenes/FONDO MARTE.jpg');
+game.load.image('mountain', 'Imagenes/mountain.png');
+
+//Objetos y coleccionables
+game.load.image('ice', 'Imagenes/Hielo.png');
+
+//Tabletas
+game.load.image('sondavk', 'Imagenes/Tablets/TViking.png');
+game.load.image('sondain', 'Imagenes/Tablets/TInSight.png');
+game.load.image('sondaop', 'Imagenes/Tablets/TOpportunity.png');
+game.load.image('sondaph', 'Imagenes/Tablets/TPhoenix.png');
+game.load.image('sondacr', 'Imagenes/Tablets/TCuriosity.png');
+
+//ICONOS
+game.load.image('tabletpc', 'Imagenes/Tablets/Tabletpc.png');
+game.load.image('tabletpa', 'Imagenes/Tablets/Tabletpa.png');
+game.load.image('icon', 'Imagenes/icon.png');
+
+//Sondas
+game.load.image('viking', 'Imagenes/Sondas/Sonda Viking.png');
+game.load.image('insight', 'Imagenes/Sondas/Sonda InSight.png');
+game.load.image('opportunity', 'Imagenes/Sondas/Sonda Opportunity.png');
+game.load.image('phoenix', 'Imagenes/Sondas/Sonda Phoenix.png');
+game.load.image('curiosity', 'Imagenes/Sondas/Sonda Curiosity.png');
+
+//SONIDOS
+ game.load.audio('jump_sound', 'Sounds/jump.ogg');
+ game.load.audio('collect_coin', 'Sounds/coin_echo.wav');
+ game.load.audio('open_sound', 'Sounds/open.wav');
+ game.load.audio('close_sound', 'Sounds/close.wav');
+}
+
+function create() {
+    //GRAFICA DEL ESCENARIO  
+game.world.setBounds(0, 0, 800, 600);
+bg = game.add.tileSprite(0, 0, 1920, 1080, 'background');
+bg.fixedToCamera = true;
+
+mountain= game.add.tileSprite(0, 5, 15360, 1080, 'mountain');
+mountain.scale.x = 0.5;
+mountain.scale.y = 0.5;
+
+map = game.add.tilemap('map');
+map.addTilesetImage('tiles');
+layer = map.createLayer(0);
+layer.resizeWorld();
+map.setCollisionByExclusion([0]);
+
+//SONIDOS
+  jump_sound = game.add.audio('jump_sound')
+  ice_sound = game.add.audio('collect_coin');
+  open_sound = game.add.audio('open_sound')
+  close_sound = game.add.audio('close_sound');
+
+//SPRITES DEL PERSONAJE PRINCIPAL
+    player = game.add.sprite(20, 50, 'player');
+    player.animations.add('idle_der', [14,15,16,15,14]);
+    player.animations.add('idle_iz', [13,12,11,12,13]);
+    player.animations.add('right', [9,10,9, 8, 7,6,7,8]);
+    player.animations.add('left', [1,0,1,2,3,4,3,2]);
+    player.animations.add('jump_iz', [24]);
+    player.animations.add('jump_der', [25]);
+    player.animations.add('falling_iz',[22,23]);
+    player.animations.add('falling_der',[26,27]);
+    player.animations.add('dead',[28]);
+    
+    //CONFIGURACION DEL PERSONAJE
+    game.physics.arcade.enable(player);
+    
+    player.body.gravity.y = 500;
+    player.body.collideWorldBounds = false;
+    player.body.setSize(40, 85, 20,1); 
+	
+  //CONTROLES DE MOVIMIENTO
+    cursors = game.input.keyboard.createCursorKeys();
+    jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);  
+    
+   //CAMARA E INTERFAZ DEL USUARIO
+    game.camera.follow(player, Phaser.Camera.FOLLOW_TOPDOWN); 
+	
+	text = game.add.text(5,0,"    :0",{ font :"50px Verdana", fill: "#ffff", align:"center"});
+    text.fixedToCamera= true;
+    text.cameraOffset.setTo(10,10);
+	
+	//CREACION DE LAS SONDAS
+		//VIKING
+		viking= game.add.sprite(200, 400,'viking');
+		viking.scale.x = 0.2;
+		viking.scale.y = 0.2;
+		//INSIGHT
+		insight=game.add.sprite(700, 430,'insight');
+		insight.scale.x = 0.2;
+		insight.scale.y = 0.2;
+		//OPPORTUNITY
+		opportunity=game.add.sprite(1500, 400,'opportunity');
+		opportunity.scale.x = 0.2;
+		opportunity.scale.y = 0.2;
+		//PHOENIX
+		phoenix=game.add.sprite(2300, 440,'phoenix');
+		phoenix.scale.x = 0.2;
+		phoenix.scale.y = 0.2;
+		//CURIOSITY 
+		curiosity=game.add.sprite(3000, 430,'curiosity');
+		curiosity.scale.x = 0.2;
+		curiosity.scale.y = 0.2;
+		game.physics.arcade.enable(viking);
+		game.physics.arcade.enable(insight);
+		game.physics.arcade.enable(opportunity);
+		game.physics.arcade.enable(phoenix);
+		game.physics.arcade.enable(curiosity);
+
+		//CREACION DE LAS TABLETS
+
+		//VIKING TABLET
+		sondavk= game.add.sprite(10, 50, 'sondavk');
+		sondavk.scale.x = 0.4;
+		sondavk.scale.y = 0.4;
+		sondavk.inputEnabled = true;
+		sondavk.input.useHandCursor = true;
+		sondavk.visible = false;
+		sondavk.fixedToCamera = true;
+
+		//INSIGHT TABLET
+		sondain= game.add.sprite(10, 50, 'sondain');
+		sondain.scale.x = 0.4;
+		sondain.scale.y = 0.4;
+		sondain.inputEnabled = true;
+		sondain.input.useHandCursor = true;
+		sondain.visible = false;
+		sondain.fixedToCamera = true;
+
+		//OPPORTUNITY TABLET
+		sondaop= game.add.sprite(10, 50, 'sondaop');
+		sondaop.scale.x = 0.4;
+		sondaop.scale.y = 0.4;
+		sondaop.inputEnabled = true;
+		sondaop.input.useHandCursor = true;
+		sondaop.visible = false;
+		sondaop.fixedToCamera = true;
+
+		//PHOENIX TABLET
+		sondaph= game.add.sprite(10, 50, 'sondaph');
+		sondaph.scale.x = 0.4;
+		sondaph.scale.y = 0.4;
+		sondaph.inputEnabled = true;
+		sondaph.input.useHandCursor = true;
+		sondaph.visible = false;
+		sondaph.fixedToCamera = true;
+
+		//CURIOSITY TABLET
+		sondacr= game.add.sprite(10, 50, 'sondacr');
+		sondacr.scale.x = 0.4;
+		sondacr.scale.y = 0.4;
+		sondacr.inputEnabled = true;
+		sondacr.input.useHandCursor = true;
+		sondacr.visible = false;
+		sondacr.fixedToCamera = true;
+	
+	//ICONOS
+		//COLLECCIONABLES
+		icon= game.add.sprite(10, 10,'icon');
+		icon.scale.x = 0.2;
+		icon.scale.y = 0.2;
+		icon.fixedToCamera = true;
+		
+	    //TABLETA CERRADA ICONO
+		tabletpc= game.add.sprite(700, 0,'tabletpc');
+		tabletpc.scale.x = 0.2;
+		tabletpc.scale.y = 0.2;
+		tabletpc.fixedToCamera = true;
+		//TABLETA ABIERTA ICONO
+		tabletpa= game.add.sprite(700, 0,'tabletpa');
+		tabletpa.scale.x = 0.2;
+		tabletpa.scale.y = 0.2;
+		tabletpa.fixedToCamera = true;
+		tabletpa.visible = false;
+		
+	//CREACION DE LOS COLECCIONABLES
+	ice = game.add.group();
+		for (var i = 0; i < 10; i++)
+		{
+			ice.add(new collectible(game));
+		}
+
+    }	
+	
+function update () {
+
+player.body.velocity.x = 0;
+
+//COLISIONES
+  game.physics.arcade.collide(player, layer);
+  game.physics.arcade.overlap(player, ice, collect, null, this);
+  game.physics.arcade.overlap(player, viking, sonda1, null, this);
+  game.physics.arcade.overlap(player, insight, sonda2, null, this);
+  game.physics.arcade.overlap(player, opportunity, sonda3, null, this);
+  game.physics.arcade.overlap(player, phoenix, sonda4, null, this);
+  game.physics.arcade.overlap(player, curiosity, sonda5, null, this);
+  
+// ANIMACION DEL PERSONAJE SEGUN DIRECCION
+
+    if (cursors.left.isDown)
+    {
+        player.body.velocity.x = -120;
+        dir = 'iz' ;
+        if (facing != 'left')
+        {
+            player.animations.play('left',12,true);
+            facing = 'left';
+        }
+    }
+    else if (cursors.right.isDown)
+    {
+        player.body.velocity.x = 120;
+        dir = 'der';
+         if (facing != 'right')
+        {
+            player.animations.play('right',12,true);
+            facing = 'right';
+        }
+
+    }
+//IDLE, ANIMACION DEL PERSONAJE ESTATICO
+    else
+    {
+        if (facing != 'idle')
+        {
+            if (facing == 'left')
+            {
+                player.animations.play('idle_iz',5,true);
+            }
+            else
+            {
+                player.animations.play('idle_der',5,true);
+            }
+
+            if(player.body.onFloor() && dir =='der' ){
+                player.animations.play('idle_der', 5, true);
+            }
+
+            else if(player.body.onFloor() && dir =='iz' ){
+                player.animations.play('idle_iz', 5, true);
+            }
+             
+			facing = 'idle';
+
+        }
+    }
+	//SI EL PERSONAJE ESTA EN EL PISO 
+    if(player.body.onFloor() && jumping )
+    {       
+            jumping=false;
+            if(dir =='iz')
+            {
+                player.animations.play('idle_iz', 5, true);
+            }
+             if(dir =='der' ){
+                player.animations.play('idle_der', 5, true);
+            }
+    }
+
+//CUANDO EL PERSONAJE TOCA EL PISO ESTANDO EN MOVIMIENTO
+    if(player.body.onFloor() && player.body.velocity.x !=0 )
+    { 
+            if (facing == 'left')
+            {
+                player.animations.play('left',10,true);
+            }
+            else
+            {
+                player.animations.play('right',10,true);
+            }
+    } 
+	
+//SALTO DEL PERSONAJE, SEGUN AL LADO QUE ESTE MIRANDO
+       if (jumpButton.isDown && player.body.onFloor())
+        {
+             player.body.velocity.y = -320;
+            if(dir=='der')
+            {
+                player.animations.play('jump_der',10); 
+            }
+            if(dir=='iz'){
+            player.animations.play('jump_iz',10); 
+            }
+
+            jumping=true;
+			jump_sound.play();
+            jump_sound.volume= 3;
+        }
+
+ //SALTO DEL PERSONAJE, SEGUN AL LADO QUE ESTE MIRANDO
+if (jumpButton.isDown && player.body.onFloor())
+    {
+             player.body.velocity.y = -320;
+            if(dir=='der')
+            {
+                player.animations.play('jump_der',10); 
+            }
+            if(dir=='iz'){
+            player.animations.play('jump_iz',10); 
+            }
+
+            jumping=true;
+    }
+
+//ANIMACION DE CAIDA 
+    if(player.body.velocity.y >= 0 && jumping){
+        if(dir=='der'){
+        player.animations.play('falling_der',5,true); 
+        }
+        if(dir=='iz'){
+            player.animations.play('falling_iz',5,true); 
+        }
+    }
+}
+
+//COLISION CON VIKING
+function sonda1(player, viking) {
+	open_sound.play();
+    open_sound.volume = 1;
+    sondavk.visible = true;
+    tabletpa.visible = true;
+
+	sondavk.events.onInputDown.add(tablet1, this);
+}
+
+function tablet1(sondavk) {
+close_sound.play();
+close_sound.volume = 1;
+sondavk.visible = false;
+tabletpa.visible = false;
+
+}
+
+//COLISION CON INSGIHT
+function sonda2(player, insight) {
+	open_sound.play();
+    open_sound.volume = 1;
+	sondain.visible = true;
+	tabletpa.visible = true;
+    sondain.events.onInputDown.add(tablet2, this);
+}
+
+function tablet2(sondain) {
+close_sound.play();
+close_sound.volume = 1;
+sondain.visible = false;
+tabletpa.visible = false;
+}
+
+//COLISION CON OPPORTUNITY
+function sonda3(player, opportunity) {
+	open_sound.play();
+    open_sound.volume = 1;
+	sondaop.visible = true;
+	tabletpa.visible = true;
+	sondaop.events.onInputDown.add(tablet3, this);
+}
+
+function tablet3(sondaop) {
+close_sound.play();
+close_sound.volume = 1;
+sondaop.visible = false;
+tabletpa.visible = false;
+}
+
+//COLISION CON PHOENIX
+function sonda4(player, phoenix) {
+	open_sound.play();
+    open_sound.volume = 1;
+	sondaph.visible = true;
+	tabletpa.visible = true;
+	sondaph.events.onInputDown.add(tablet4, this);
+}
+
+function tablet4(sondaph) {
+close_sound.play();
+close_sound.volume = 1;
+sondaph.visible = false;
+tabletpa.visible = false;
+}
+
+//COLISION CON CURIOSITY
+function sonda5(player, curiosity) {
+	open_sound.play();
+    open_sound.volume = 1;
+	sondacr.visible = true;
+	tabletpa.visible = true;
+	sondacr.events.onInputDown.add(tablet5, this);
+}
+
+function tablet5(sondacr) {
+close_sound.play();
+close_sound.volume = 1;
+sondacr.visible = false;
+tabletpa.visible = false;
+}
+
+function collect(player, ice) {
+    colec += 1;
+    text.text="    :"+colec;
+    ice.kill();
+    ice_sound.play();
+    ice_sound.volume = 0.5;
+}
+
+function render () {
+
+}
+	
+</script>
+
+</div>
+  </section>
+
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  
+  <footer class="footer text-faded text-center py-5">
+    <div class="container">
+      <p class="m-0 small">Universidad San Buenaventura</p>
+	  <p class="m-0 small">Ingeniería Multimedia</p>
+    </div>
+  </footer>
+
+
+
+</body>
+</html>
